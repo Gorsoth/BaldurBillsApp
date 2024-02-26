@@ -67,11 +67,11 @@ namespace BaldurBillsApp.Controllers
                         var currentMonth = DateTime.Now.Month;
 
                         var lastInvoiceThisMonth = _context.InvoicesLists
-    .Where(inv => inv.InvoiceDate.HasValue &&
-                  inv.InvoiceDate.Value.Year == currentYear &&
-                  inv.InvoiceDate.Value.Month == currentMonth)
-    .OrderByDescending(inv => inv.RegistryNumber)
-    .FirstOrDefault();
+                        .Where(inv => inv.InvoiceDate.HasValue &&
+                        inv.InvoiceDate.Value.Year == currentYear &&
+                        inv.InvoiceDate.Value.Month == currentMonth)
+                        .OrderByDescending(inv => inv.RegistryNumber)
+                        .FirstOrDefault();
 
                         int nextNumber = 1;
                         if (lastInvoiceThisMonth != null)
