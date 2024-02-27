@@ -1,0 +1,69 @@
+﻿@model BaldurBillsApp.Models.Prepayment
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Prepayment</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="PrepaymentId" />
+            <div class="form-group">
+                <label asp-for="PrepaymentRegistryNumber" class="control-label"></label>
+                <input asp-for="PrepaymentRegistryNumber" class="form-control" />
+                <span asp-validation-for="PrepaymentRegistryNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="VendorId" class="control-label"></label>
+                <select asp-for="VendorId" class="form-control" asp-items="ViewBag.VendorId"></select>
+                <span asp-validation-for="VendorId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PrepaymentAmount" class="control-label"></label>
+                <input asp-for="PrepaymentAmount" class="form-control" />
+                <span asp-validation-for="PrepaymentAmount" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PrepaymentCurrency" class="control-label"></label>
+                <input asp-for="PrepaymentCurrency" class="form-control" />
+                <span asp-validation-for="PrepaymentCurrency" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PrepaymentDate" class="control-label"></label>
+                <input asp-for="PrepaymentDate" class="form-control" />
+                <span asp-validation-for="PrepaymentDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RemainingAmount" class="control-label"></label>
+                <input asp-for="RemainingAmount" class="form-control" />
+                <span asp-validation-for="RemainingAmount" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="IsSettled" class="control-label"></label>
+                <input asp-for="IsSettled" class="form-control" />
+                <span asp-validation-for="IsSettled" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PrepaymentEntryDate" class="control-label"></label>
+                <input asp-for="PrepaymentEntryDate" class="form-control" />
+                <span asp-validation-for="PrepaymentEntryDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
