@@ -17,5 +17,7 @@ public partial class ToPlnRate
     [Display(Name = "Value")]
     public decimal? RateValue { get; set; }
 
-    public virtual ICollection<InvoicesList> InvoicesLists { get; set; } = new List<InvoicesList>();
+	public string? NbpTableName { get; set; }
+
+	public virtual ICollection<InvoicesList> InvoicesLists { get; set; } = new List<InvoicesList>();
 }

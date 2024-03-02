@@ -21,6 +21,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.RateValue)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NbpTableName)
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -36,6 +39,9 @@
             <td>
                 @Html.DisplayFor(modelItem => item.RateValue)
             </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NbpTableName)
+                </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.RateId">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.RateId">Details</a> |
