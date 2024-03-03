@@ -18,10 +18,33 @@ namespace BaldurBillsApp.Controllers
             _context = context;
         }
 
-        // GET: ToPlnRates
-        public async Task<IActionResult> Index()
+        // GET: ToPlnRates/
+        public async Task<IActionResult> Index(DateOnly? date = null)
         {
-            return View(await _context.ToPlnRates.ToListAsync());
+            var lastDay = await _context.ToPlnRates.MaxAsync(r => (DateOnly?)r.RateDate);
+
+            if (date != null && date > lastDay)
+            {
+                date = lastDay;
+            }
+
+            if (date == null)
+            {
+                date = lastDay;
+            }
+
+            if (date == null)
+            {
+                return View(new List<ToPlnRate>());
+            }
+
+
+
+            var filteredRates = await _context.ToPlnRates
+                        .Where(r => r.RateDate == date)
+                        .ToListAsync();
+
+            return View(filteredRates);
         }
 
         // GET: ToPlnRates/Details/5
@@ -53,7 +76,7 @@ namespace BaldurBillsApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("RateId,RateDate,RateCurrency,RateValue")] ToPlnRate toPlnRate)
+        public async Task<IActionResult> Create([Bind("RateId,RateDate,RateCurrency,RateValue")] Models.ToPlnRate toPlnRate)
         {
             if (ModelState.IsValid)
             {
@@ -85,7 +108,7 @@ namespace BaldurBillsApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("RateId,RateDate,RateCurrency,RateValue")] ToPlnRate toPlnRate)
+        public async Task<IActionResult> Edit(int id, [Bind("RateId,RateDate,RateCurrency,RateValue")] Models.ToPlnRate toPlnRate)
         {
             if (id != toPlnRate.RateId)
             {

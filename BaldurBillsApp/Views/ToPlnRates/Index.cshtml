@@ -4,11 +4,12 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+@* Formularz do zmiany daty *@
+<form method="get" action="@Url.Action("Index", "ToPlnRates")">
+    <input type="date" name="date" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
+    <button type="submit">Change date</button>
+</form>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
 <table class="table">
     <thead>
         <tr>
@@ -28,26 +29,27 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.RateDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.RateCurrency)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.RateValue)
-            </td>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RateDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RateCurrency)
+                </td>
+                <td>
+                    @string.Format("{0:N4}", item.RateValue)
+                </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.NbpTableName)
                 </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.RateId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.RateId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.RateId">Delete</a>
-            </td>
-        </tr>
-}
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.RateId">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.RateId">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.RateId">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
