@@ -25,23 +25,22 @@ public class NbpRateService
         HttpResponseMessage response = await _httpClient.GetAsync(_nbpApiUrl);
         if (response.IsSuccessStatusCode)
         {
-            var xmlContent = await response.Content.ReadAsStringAsync();
-            var xDocument = XDocument.Parse(xmlContent);
+            try
+            {
+                var xmlContent = await response.Content.ReadAsStringAsync();
+                var xDocument = XDocument.Parse(xmlContent);
 
-            var ns = xDocument.Root.GetDefaultNamespace();
-            var publicationDate = DateOnly.ParseExact(xDocument.Descendants(ns + "data_publikacji").First().Value, "yyyy-MM-dd");
-            var tableNumber = xDocument.Descendants(ns + "numer_tabeli").First().Value;
-            var yesterday = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(-1));
 
-            // Ensure we are adding rates for yesterday only
-            //if (publicationDate == yesterday)
-            //{
-                var positions = xDocument.Descendants(ns + "pozycja");
+                var publicationDate = DateOnly.ParseExact(xDocument.Descendants("data_publikacji").First().Value, "yyyy-MM-dd");
+                var tableNumber = xDocument.Descendants("numer_tabeli").First().Value;
+                var yesterday = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(-1));
+
+                var positions = xDocument.Descendants("pozycja");
 
                 foreach (var position in positions)
                 {
-                    var currencyCode = position.Element(ns + "kod_waluty").Value;
-                    var averageRate = decimal.Parse(position.Element(ns + "kurs_sredni").Value, CultureInfo.InvariantCulture);
+                    var currencyCode = position.Element("kod_waluty").Value;
+                    var averageRate = Convert.ToDecimal(position.Element("kurs_sredni").Value);
 
                     // Assuming you want to update the rate if it already exists
                     var existingRate = await _dbContext.ToPlnRates
@@ -59,7 +58,7 @@ public class NbpRateService
                         {
                             RateDate = publicationDate,
                             RateCurrency = currencyCode,
-                            RateValue = averageRate,
+                            RateValue = Convert.ToDecimal(averageRate),
                             NbpTableName = tableNumber
                         };
                         _dbContext.ToPlnRates.Add(newRate);
@@ -67,7 +66,21 @@ public class NbpRateService
                 }
 
                 await _dbContext.SaveChangesAsync();
-            //}
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                if (e.InnerException != null)
+                {
+                    Console.WriteLine("Inner exception details: " + e.InnerException.Message);
+                    var inner = e.InnerException;
+                    while (inner.InnerException != null)
+                    {
+                        inner = inner.InnerException;
+                        Console.WriteLine(inner.Message);
+                    }
+                }
+            }
         }
         else
         {

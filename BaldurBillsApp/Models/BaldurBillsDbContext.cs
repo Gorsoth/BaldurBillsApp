@@ -206,9 +206,9 @@ public partial class BaldurBillsDbContext : DbContext
 
             entity.Property(e => e.RateId).HasColumnName("RateID");
             entity.Property(e => e.RateCurrency)
-                .HasMaxLength(3)
+                .HasMaxLength(10)
                 .IsUnicode(false);
-            entity.Property(e => e.RateValue).HasColumnType("decimal(5, 4)");
+            entity.Property(e => e.RateValue).HasColumnType("decimal(10, 5)");
         });
 
         modelBuilder.Entity<Vendor>(entity =>
