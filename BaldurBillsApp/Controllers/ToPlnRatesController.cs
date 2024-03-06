@@ -23,6 +23,9 @@ namespace BaldurBillsApp.Controllers
         {
             var lastDay = await _context.ToPlnRates.MaxAsync(r => (DateOnly?)r.RateDate);
 
+            DateOnly selectedDate = date ?? DateOnly.FromDateTime(DateTime.Today);
+            ViewBag.SelectedDate = selectedDate;
+
             if (date != null && date > lastDay)
             {
                 date = lastDay;

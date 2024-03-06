@@ -5,8 +5,13 @@
 }
 
 @* Formularz do zmiany daty *@
+
+@{
+    DateOnly selectedDate = ViewBag.SelectedDate ?? DateOnly.FromDateTime(DateTime.Today);
+}
+
 <form method="get" action="@Url.Action("Index", "ToPlnRates")">
-    <input type="date" name="date" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
+    <input type="date" name="date" value="@selectedDate.ToString("yyyy-MM-dd")"  />
     <button type="submit">Change date</button>
 </form>
 
@@ -43,11 +48,6 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.NbpTableName)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.RateId">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.RateId">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.RateId">Delete</a>
                 </td>
             </tr>
         }
