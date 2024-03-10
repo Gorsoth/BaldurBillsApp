@@ -17,8 +17,9 @@
                 <input asp-for="PrepaymentRegistryNumber" class="form-control" />
                 <span asp-validation-for="PrepaymentRegistryNumber" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <label asp-for="VendorId" class="control-label"></label>
+                <label  class="control-label"></label>
                 <input class="form-control" list="vendors-list" id="vendorInput" placeholder="Start typing to search for a vendor..." />
                 <datalist id="vendors-list">
                     @foreach (var vendor in ViewBag.vendors)
@@ -70,15 +71,18 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
     <script>
         var vendors = @Html.Raw(Json.Serialize(ViewBag.vendors));
-        function updateVendorId(vendorName) {
-            var vendorOption = Array.from(document.querySelectorAll('#vendors-list option')).find(option => option.value === vendorName);
-            var vendorId = vendorOption ? vendorOption.getAttribute('data-vendor-id') : '';
-            document.getElementById('vendorIdField').value = vendorId;
-        }
+        document.getElementById('vendorInput').addEventListener('input', function () {
+            var vendorName = this.value;
+            var vendor = vendors.find(v => v.text == vendorName);
+            if (vendor) {
+                document.getElementById('vendorIdField').value = vendor.value;
+            } else {
+                document.getElementById('vendorIdField').value = null; 
+            }
+        });
     </script>
 }
 }

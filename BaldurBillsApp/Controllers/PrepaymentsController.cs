@@ -47,8 +47,11 @@ namespace BaldurBillsApp.Controllers
         // GET: Prepayments/Create
         public IActionResult Create()
         {
-            var vendors = _context.Vendors.ToList();
-            ViewBag.vendors = new SelectList(vendors, "VendorId", "VendorName");
+            var vendors = _context.Vendors
+                       .Select(v => new { Text = v.VendorName + " - " + v.VatId, Value = v.VendorId })
+                       .ToList();
+
+            ViewBag.vendors = new SelectList(vendors, "Value", "Text");
             return View();
         }
 
@@ -59,16 +62,26 @@ namespace BaldurBillsApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("PrepaymentId,PrepaymentRegistryNumber,VendorId,PrepaymentAmount,PrepaymentCurrency,PrepaymentDate,RemainingAmount,IsSettled,PrepaymentEntryDate")] Prepayment prepayment)
         {
-            ViewBag.Vendors = _context.Vendors.ToList();
+            
+
 
             if (ModelState.IsValid)
             {
+                //funkcja kolejny numer w bazi / datetime miesiac / rok
+                int currentMonth = DateOnly.FromDateTime(DateTime.Now).Month;
+                int currentYear = DateOnly.FromDateTime(DateTime.Now).Year;
+
+                var nextNumber = _context.Prepayments.Count(x => x.PrepaymentEntryDate.HasValue && x.PrepaymentEntryDate.Value.Month == currentMonth && x.PrepaymentEntryDate.Value.Year == currentYear) + 1;
+
+                var registryNumer = $@"{nextNumber}/{currentMonth}/{currentYear}";
+                prepayment.PrepaymentRegistryNumber = registryNumer;
+
                 _context.Add(prepayment);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             //ViewData["VendorId"] = new SelectList(_context.Vendors, "VendorId", "VendorId", prepayment.VendorId);
-            
+            ViewBag.Vendors = _context.Vendors.ToList();
             return View(prepayment);
         }
 
