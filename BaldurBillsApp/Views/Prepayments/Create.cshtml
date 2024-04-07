@@ -20,7 +20,7 @@
 
             <div class="form-group">
                 <label  class="control-label"></label>
-                <input class="form-control" list="vendors-list" id="vendorInput" placeholder="Start typing to search for a vendor..." />
+                <input class="form-control" list="vendors-list" id="vendorInput" placeholder="Start typing to search for a vendor" />
                 <datalist id="vendors-list">
                     @foreach (var vendor in ViewBag.vendors)
                     {
@@ -36,8 +36,14 @@
             </div>
             <div class="form-group">
                 <label asp-for="PrepaymentCurrency" class="control-label"></label>
-                <input asp-for="PrepaymentCurrency" class="form-control" />
-                <span asp-validation-for="PrepaymentCurrency" class="text-danger"></span>
+                <input class="form-control" list="currencies-list" id="currencyInput" placeholder="Start typing to search for a currency" />
+                <datalist id="currencies-list">
+                    @foreach (var currency in ViewBag.CurrencyList)
+                    {
+                        <option value="@currency.Text"></option>
+                    }
+                </datalist>
+                <input type="hidden" asp-for="PrepaymentCurrency" id="PrepaymentIdField" />
             </div>
             <div class="form-group">
                 <label asp-for="PrepaymentDate" class="control-label"></label>

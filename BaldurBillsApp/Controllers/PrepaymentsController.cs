@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BaldurBillsApp.Models;
+using BaldurBillsApp.SelectModels;
 
 namespace BaldurBillsApp.Controllers
 {
@@ -52,6 +53,18 @@ namespace BaldurBillsApp.Controllers
                        .ToList();
 
             ViewBag.vendors = new SelectList(vendors, "Value", "Text");
+
+            var currencies = _context.ToPlnRates
+                .Select(r => new {r.RateCurrency})
+                .Distinct()
+                .Select(r => new CurrencySelectModel
+                {
+                CurrencyName = r.RateCurrency
+                })
+                .ToList();
+
+            ViewBag.CurrencyList = new SelectList(currencies, "CurrencyCode", "CurrencyName");
+
             return View();
         }
 

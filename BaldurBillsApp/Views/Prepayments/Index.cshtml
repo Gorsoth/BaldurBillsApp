@@ -55,13 +55,10 @@
                 @Html.DisplayFor(modelItem => item.RemainingAmount)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.IsSettled)
-            </td>
-            <td>
                 @Html.DisplayFor(modelItem => item.PrepaymentEntryDate)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Vendor.VendorId)
+                @Html.DisplayFor(modelItem => item.Vendor.VendorName)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.PrepaymentId">Edit</a> |
