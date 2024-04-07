@@ -25,7 +25,10 @@ public partial class Prepayment
     [Display(Name = "Remaining amount")]
     public decimal? RemainingAmount { get; set; }
 
-    public bool? IsSettled { get; set; }
+    public bool? IsSettled
+    {
+        get { return RemainingAmount == 0.00m; }
+    }
 
     [Display(Name = "Entry date")]
     public DateOnly? PrepaymentEntryDate { get; set; }

@@ -151,6 +151,12 @@ namespace BaldurBillsApp.Controllers
             return View(prepayment);
         }
 
+        // Settlement subtraction
+        //public async Task<IActionResult> SubtractSettlement(int? id)
+        //{
+
+        //}
+
         // GET: Prepayments/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
