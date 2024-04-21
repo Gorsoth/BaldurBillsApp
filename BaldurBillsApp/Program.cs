@@ -16,6 +16,8 @@ builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
 builder.Services.AddDbContext<BaldurBillsDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DESKTOP-AB6HGHF\\SQLEXPRESS;Database=BaldurBillsDB;Trusted_Connection=True;TrustServerCertificate=True")));
 
+builder.Services.AddScoped<ISharedDataService, SharedDataService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

@@ -7,16 +7,19 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BaldurBillsApp.Models;
 using BaldurBillsApp.SelectModels;
+using BaldurBillsApp.Services;
 
 namespace BaldurBillsApp.Controllers
 {
     public class PrepaymentsController : Controller
     {
         private readonly BaldurBillsDbContext _context;
+        private readonly ISharedDataService _sharedDataService;
 
-        public PrepaymentsController(BaldurBillsDbContext context)
+        public PrepaymentsController(BaldurBillsDbContext context, ISharedDataService sharedDataService)
         {
             _context = context;
+            _sharedDataService = sharedDataService;
         }
 
         // GET: Prepayments
@@ -48,23 +51,8 @@ namespace BaldurBillsApp.Controllers
         // GET: Prepayments/Create
         public IActionResult Create()
         {
-            var vendors = _context.Vendors
-                       .Select(v => new { Text = v.VendorName + " - " + v.VatId, Value = v.VendorId })
-                       .ToList();
-
-            ViewBag.vendors = new SelectList(vendors, "Value", "Text");
-
-            var currencies = _context.ToPlnRates
-                .Select(r => new {r.RateCurrency})
-                .Distinct()
-                .Select(r => new CurrencySelectModel
-                {
-                CurrencyName = r.RateCurrency
-                })
-                .ToList();
-
-            ViewBag.CurrencyList = new SelectList(currencies, "CurrencyCode", "CurrencyName");
-
+            ViewBag.vendors = _sharedDataService.GetVendors();
+            ViewBag.CurrencyList = _sharedDataService.GetCurrencies();
             return View();
         }
 

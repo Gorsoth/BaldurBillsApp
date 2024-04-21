@@ -6,16 +6,19 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BaldurBillsApp.Models;
+using BaldurBillsApp.Services;
 
 namespace BaldurBillsApp.Controllers
 {
     public class InvoicesListController : Controller
     {
         private readonly BaldurBillsDbContext _context;
+        private readonly ISharedDataService _sharedDataService;
 
-        public InvoicesListController(BaldurBillsDbContext context)
+        public InvoicesListController(BaldurBillsDbContext context, ISharedDataService sharedDataService)
         {
             _context = context;
+            _sharedDataService = sharedDataService;
         }
 
         // GET: InvoicesList
@@ -48,8 +51,8 @@ namespace BaldurBillsApp.Controllers
         // GET: InvoicesList/Create
         public IActionResult Create()
         {
-            ViewData["RateId"] = new SelectList(_context.ToPlnRates, "RateId", "RateId");
-            ViewData["VendorId"] = new SelectList(_context.Vendors, "VendorId", "VendorId");
+            ViewBag.vendors = _sharedDataService.GetVendors();
+            ViewBag.CurrencyList = _sharedDataService.GetCurrencies();
             return View();
         }
 
