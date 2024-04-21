@@ -57,6 +57,16 @@ namespace BaldurBillsApp.Controllers
         {
             if (ModelState.IsValid)
             {
+                bool vendorExists = await _context.Vendors.AnyAsync(v => v.VendorName == vendor.VendorName);
+                if (vendorExists)
+                {
+                    // Add an error message to the ModelState
+                    ModelState.AddModelError("VendorName", "Vendor with this name already exists.");
+
+                    // Return to the view with the current vendor object to display the error
+                    return View(vendor);
+                }
+
                 _context.Add(vendor);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
