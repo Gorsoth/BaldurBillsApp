@@ -62,6 +62,15 @@ namespace BaldurBillsApp.Controllers
         {
             if (ModelState.IsValid)
             {
+                //funkcja kolejny numer w bazi / datetime miesiac / rok
+                int currentMonth = DateOnly.FromDateTime(DateTime.Now).Month;
+                int currentYear = DateOnly.FromDateTime(DateTime.Now).Year;
+
+                var nextNumber = _context.InvoicesLists.Count(x => x.EntryDate.HasValue && x.EntryDate.Value.Month == currentMonth && x.EntryDate.Value.Year == currentYear) + 1;
+
+                var registryNumber = $@"{nextNumber}/{currentMonth}/{currentYear}";
+                invoicesList.RegistryNumber = registryNumber;
+
                 _context.Add(invoicesList);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

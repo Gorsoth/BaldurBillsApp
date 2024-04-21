@@ -86,8 +86,8 @@ namespace BaldurBillsApp.Controllers
 
                 var nextNumber = _context.Prepayments.Count(x => x.PrepaymentEntryDate.HasValue && x.PrepaymentEntryDate.Value.Month == currentMonth && x.PrepaymentEntryDate.Value.Year == currentYear) + 1;
 
-                var registryNumer = $@"{nextNumber}/{currentMonth}/{currentYear}";
-                prepayment.PrepaymentRegistryNumber = registryNumer;
+                var registryNumber = $@"{nextNumber}/{currentMonth}/{currentYear}";
+                prepayment.PrepaymentRegistryNumber = registryNumber;
 
                 _context.Add(prepayment);
                 await _context.SaveChangesAsync();
