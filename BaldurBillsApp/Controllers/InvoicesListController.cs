@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BaldurBillsApp.Models;
 using BaldurBillsApp.Services;
+using Microsoft.Extensions.Hosting.Internal;
+using Microsoft.AspNetCore.Hosting;
 
 namespace BaldurBillsApp.Controllers
 {
@@ -14,11 +16,21 @@ namespace BaldurBillsApp.Controllers
     {
         private readonly BaldurBillsDbContext _context;
         private readonly ISharedDataService _sharedDataService;
+        private readonly IWebHostEnvironment _hostingEnvironment;
 
-        public InvoicesListController(BaldurBillsDbContext context, ISharedDataService sharedDataService)
+        public InvoicesListController(BaldurBillsDbContext context, ISharedDataService sharedDataService, IWebHostEnvironment hostingEnvironment)
         {
             _context = context;
             _sharedDataService = sharedDataService;
+            _hostingEnvironment = hostingEnvironment; // Przypisanie wstrzykniętego obiektu do lokalnej zmiennej
+        }
+
+        // Metoda, która używa _hostingEnvironment
+        public IActionResult UploadFile()
+        {
+            var path = Path.Combine(_hostingEnvironment.WebRootPath, "uploads");
+            // logika przetwarzania pliku
+            return View();
         }
 
         // GET: InvoicesList
@@ -39,6 +51,7 @@ namespace BaldurBillsApp.Controllers
             var invoicesList = await _context.InvoicesLists
                 .Include(i => i.Rate)
                 .Include(i => i.Vendor)
+                .Include(i => i.Attachments)
                 .FirstOrDefaultAsync(m => m.InvoiceId == id);
             if (invoicesList == null)
             {
@@ -61,14 +74,15 @@ namespace BaldurBillsApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("InvoiceId,RegistryNumber,InvoiceDate,InvoiceNumber,VendorId,Title,NetAmount,GrossAmount,Currency,DueDate,IsPaid,PaymentDate,EntryDate,Comment,RateDate,RateId")] InvoicesList invoicesList)
+        public async Task<IActionResult> Create([Bind("InvoiceId,RegistryNumber,InvoiceDate,InvoiceNumber,VendorId,Title,NetAmount,GrossAmount,Currency,DueDate,IsPaid,PaymentDate,EntryDate,Comment,RateDate,RateId")] InvoicesList invoicesList, List<IFormFile> files)
         {
             if (ModelState.IsValid)
             {
+
+
                 //funkcja kolejny numer w bazi / datetime miesiac / rok
                 int currentMonth = DateOnly.FromDateTime(DateTime.Now).Month;
                 int currentYear = DateOnly.FromDateTime(DateTime.Now).Year;
-
                 var nextNumber = _context.InvoicesLists.Count(x => x.EntryDate.HasValue && x.EntryDate.Value.Month == currentMonth && x.EntryDate.Value.Year == currentYear) + 1;
 
                 var registryNumber = $@"{nextNumber}/{currentMonth}/{currentYear}";
@@ -76,10 +90,40 @@ namespace BaldurBillsApp.Controllers
 
                 _context.Add(invoicesList);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+
+                if (files != null && files.Count > 0)
+                {
+                    foreach (var file in files)
+                    {
+                        if (file.Length > 0)
+                        {
+                            var folderPath = Path.Combine(_hostingEnvironment.WebRootPath, "uploads");
+                            if (!Directory.Exists(folderPath))
+                                Directory.CreateDirectory(folderPath);
+
+                            var filePath = Path.Combine(folderPath, Path.GetFileName(file.FileName));
+                            using (var fileStream = new FileStream(filePath, FileMode.Create))
+                            {
+                                await file.CopyToAsync(fileStream);
+                            }
+
+                            var attachment = new Attachment
+                            {
+                                InvoiceId = invoicesList.InvoiceId, // Przypisz ID nowo utworzonej faktury
+                                FilePath = filePath
+                            };
+                            _context.Attachments.Add(attachment);
+                        }
+                    }
+                    await _context.SaveChangesAsync(); // Zapisz wszystkie załączniki
+                }
             }
+
+            return RedirectToAction(nameof(Index));
+
             ViewData["RateId"] = new SelectList(_context.ToPlnRates, "RateId", "RateId", invoicesList.RateId);
             ViewData["VendorId"] = new SelectList(_context.Vendors, "VendorId", "VendorId", invoicesList.VendorId);
+
             return View(invoicesList);
         }
 

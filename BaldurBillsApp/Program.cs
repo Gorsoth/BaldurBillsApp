@@ -3,6 +3,7 @@ using BaldurBillsApp.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Hosting.Internal;
 using System.Net.Http;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,6 +18,7 @@ builder.Services.AddDbContext<BaldurBillsDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DESKTOP-AB6HGHF\\SQLEXPRESS;Database=BaldurBillsDB;Trusted_Connection=True;TrustServerCertificate=True")));
 
 builder.Services.AddScoped<ISharedDataService, SharedDataService>();
+
 
 var app = builder.Build();
 

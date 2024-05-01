@@ -101,6 +101,24 @@
             @Html.DisplayFor(model => model.Vendor.VendorId)
         </dd>
     </dl>
+    @if (Model.Attachments.Any())
+    {
+        <div>
+            @foreach (var attachment in Model.Attachments)
+            {
+                var path = attachment.FilePath;
+                // Przekształcanie ścieżki systemowej na ścieżkę względną
+                var relativePath = path.Replace(@"C:\Users\majew\source\repos\BaldurBillsApp\BaldurBillsApp\wwwroot", "");
+                // Dekodowanie URL, jeśli potrzebne
+                var urlPath = Url.Content("~" + relativePath.Replace("\\", "/"));
+                <img src="@urlPath" alt="Invoice Image" style="max-width: 600px; height: 600px;">
+            }
+        </div>
+    }
+    else
+    {
+        <p>No images available.</p>
+    }
 </div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.InvoiceId">Edit</a> |
