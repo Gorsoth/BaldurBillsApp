@@ -115,4 +115,28 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        var vendors = @Html.Raw(Json.Serialize(ViewBag.vendors));
+        document.getElementById('vendorInput').addEventListener('input', function () {
+            var vendorName = this.value;
+            var vendor = vendors.find(v => v.text == vendorName);
+            if (vendor) {
+                document.getElementById('vendorIdField').value = vendor.value;
+            } else {
+                document.getElementById('vendorIdField').value = null;
+            }
+        });
+    </script>
+    <script>
+        var currencyList = @Html.Raw(Json.Serialize(ViewBag.CurrencyList));
+        document.getElementById('currencyInput').addEventListener('input', function () {
+            var currencyName = this.value;
+            var currency = currencyList.find(v => v.text == currencyName);
+            if (currency) {
+                document.getElementById('InvoicesIdField').value = currency.value;
+            } else {
+                document.getElementById('InvoicesIdField').value = null;
+            }
+        });
+    </script>
 }

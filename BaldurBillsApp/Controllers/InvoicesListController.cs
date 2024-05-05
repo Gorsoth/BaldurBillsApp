@@ -110,9 +110,13 @@ namespace BaldurBillsApp.Controllers
                             }
                             var fileEditedPath = filePath + "_new.pdf";
 
+                            var currency = _context.ToPlnRates.FirstOrDefault(x => x.RateDate == invoicesList.RateDate && x.RateCurrency == invoicesList.Currency);
+                            var plnValue = invoicesList.GrossAmount.Value * currency.RateValue;
+                            var currencyEdited = currency.NbpTableName + "; 1" + currency.RateCurrency + "=" + currency.RateValue.ToString() + " Value in PLN = " + plnValue.ToString();
+
                             if (Path.GetExtension(filePath).Equals(".pdf", StringComparison.OrdinalIgnoreCase))
                             {
-                                _pdfService.AddRegistryNumberToPdf(filePath, fileEditedPath, registryNumber);
+                                _pdfService.AddRegistryNumberToPdf(filePath, fileEditedPath, registryNumber, currencyEdited);
                             }
 
                             var attachment = new Attachment
