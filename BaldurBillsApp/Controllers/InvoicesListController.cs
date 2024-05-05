@@ -76,10 +76,15 @@ namespace BaldurBillsApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("InvoiceId,RegistryNumber,InvoiceDate,InvoiceNumber,VendorId,Title,NetAmount,GrossAmount,Currency,DueDate,IsPaid,PaymentDate,EntryDate,Comment,RateDate,RateId")] InvoicesList invoicesList, List<IFormFile> files)
+        public async Task<IActionResult> Create([Bind("InvoiceId,InvoiceDate,InvoiceNumber,VendorId,Title,NetAmount,GrossAmount,Currency,DueDate,IsPaid,PaymentDate,Comment,RateDate,RateId")] InvoicesList invoicesList, List<IFormFile> files)
         {
             if (ModelState.IsValid)
             {
+                if (IsInvoiceDoubled(invoicesList.VendorId, invoicesList.InvoiceNumber))
+                {
+                    ModelState.AddModelError("", "Invoice with this number already exists for this vendor. Please, enter different data.");
+                    return Create();
+                }
                 invoicesList.EntryDate = DateOnly.FromDateTime(DateTime.Now);
 
                 //funkcja kolejny numer w bazi / datetime miesiac / rok
@@ -233,6 +238,12 @@ namespace BaldurBillsApp.Controllers
         private bool InvoicesListExists(int id)
         {
             return _context.InvoicesLists.Any(e => e.InvoiceId == id);
+        }
+
+        private bool IsInvoiceDoubled(int? vendorId, string invoiceNumber)
+        {
+            bool check = _context.InvoicesLists.Any(x => x.VendorId == vendorId && x.InvoiceNumber == invoiceNumber);
+            return check;
         }
     }
 }
