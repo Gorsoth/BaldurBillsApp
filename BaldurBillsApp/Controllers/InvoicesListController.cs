@@ -108,7 +108,7 @@ namespace BaldurBillsApp.Controllers
                             {
                                 await file.CopyToAsync(fileStream);
                             }
-                            var fileEditedPath = filePath + "_new.pdf";
+                            var fileEditedPath = filePath + invoicesList.InvoiceId + ".pdf";
 
                             var currency = _context.ToPlnRates.FirstOrDefault(x => x.RateDate == invoicesList.RateDate && x.RateCurrency == invoicesList.Currency);
                             var plnValue = invoicesList.GrossAmount.Value * currency.RateValue;
