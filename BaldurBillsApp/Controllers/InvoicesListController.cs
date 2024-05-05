@@ -80,7 +80,7 @@ namespace BaldurBillsApp.Controllers
         {
             if (ModelState.IsValid)
             {
-
+                invoicesList.EntryDate = DateOnly.FromDateTime(DateTime.Now);
 
                 //funkcja kolejny numer w bazi / datetime miesiac / rok
                 int currentMonth = DateOnly.FromDateTime(DateTime.Now).Month;

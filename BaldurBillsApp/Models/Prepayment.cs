@@ -9,7 +9,7 @@ public partial class Prepayment
     public int PrepaymentId { get; set; }
 
     [Display(Name = "Registry number")]
-    public string PrepaymentRegistryNumber { get; set; } = null!;
+    public string? PrepaymentRegistryNumber { get; set; } = null!;
 
     public int? VendorId { get; set; }
 

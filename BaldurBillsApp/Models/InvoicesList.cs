@@ -9,7 +9,7 @@ public partial class InvoicesList
     public int InvoiceId { get; set; }
 
     [Display(Name = "Registry number")]
-    public string RegistryNumber { get; set; } = null!;
+    public string? RegistryNumber { get; set; } = null!;
 
     [Display(Name = "Invoice date")]
     public DateOnly? InvoiceDate { get; set; }

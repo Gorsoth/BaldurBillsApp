@@ -68,6 +68,8 @@ namespace BaldurBillsApp.Controllers
 
             if (ModelState.IsValid)
             {
+                prepayment.PrepaymentEntryDate = DateOnly.FromDateTime(DateTime.Now);
+
                 //funkcja kolejny numer w bazi / datetime miesiac / rok
                 int currentMonth = DateOnly.FromDateTime(DateTime.Now).Month;
                 int currentYear = DateOnly.FromDateTime(DateTime.Now).Year;
