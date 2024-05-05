@@ -17,12 +17,14 @@ namespace BaldurBillsApp.Controllers
         private readonly BaldurBillsDbContext _context;
         private readonly ISharedDataService _sharedDataService;
         private readonly IWebHostEnvironment _hostingEnvironment;
+        private readonly PdfService _pdfService;
 
-        public InvoicesListController(BaldurBillsDbContext context, ISharedDataService sharedDataService, IWebHostEnvironment hostingEnvironment)
+        public InvoicesListController(BaldurBillsDbContext context, ISharedDataService sharedDataService, IWebHostEnvironment hostingEnvironment, PdfService pdfService)
         {
             _context = context;
             _sharedDataService = sharedDataService;
             _hostingEnvironment = hostingEnvironment; // Przypisanie wstrzykniętego obiektu do lokalnej zmiennej
+            _pdfService = pdfService;
         }
 
         // Metoda, która używa _hostingEnvironment
@@ -106,12 +108,19 @@ namespace BaldurBillsApp.Controllers
                             {
                                 await file.CopyToAsync(fileStream);
                             }
+                            var fileEditedPath = filePath + "_new.pdf";
+
+                            if (Path.GetExtension(filePath).Equals(".pdf", StringComparison.OrdinalIgnoreCase))
+                            {
+                                _pdfService.AddRegistryNumberToPdf(filePath, fileEditedPath, registryNumber);
+                            }
 
                             var attachment = new Attachment
                             {
                                 InvoiceId = invoicesList.InvoiceId, // Przypisz ID nowo utworzonej faktury
-                                FilePath = filePath
+                                FilePath = fileEditedPath
                             };
+
                             _context.Attachments.Add(attachment);
                         }
                     }

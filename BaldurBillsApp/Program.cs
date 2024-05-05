@@ -19,6 +19,8 @@ builder.Services.AddDbContext<BaldurBillsDbContext>(options =>
 
 builder.Services.AddScoped<ISharedDataService, SharedDataService>();
 
+builder.Services.AddScoped<PdfService>();
+
 
 var app = builder.Build();
 

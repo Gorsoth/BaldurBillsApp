@@ -4,9 +4,28 @@
     ViewData["Title"] = "Details";
 }
 
+<style>
+    .container {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .left, .right {
+        flex: 1;
+    }
+
+    .buttons {
+        margin-top: 20px;
+        text-align: right;
+    }
+</style>
+
 <h1>Details</h1>
 
-<div>
+
+<div class="container">
+    <!-- Lewa kolumna dla szczegółów faktury -->
+    <div class="left">
     <h4>InvoicesList</h4>
     <hr />
     <dl class="row">
@@ -101,9 +120,12 @@
             @Html.DisplayFor(model => model.Vendor.VendorId)
         </dd>
     </dl>
+    </div>
+
+        <!-- Prawa kolumna dla PDF -->
+    <div class="right">
     @if (Model.Attachments.Any())
     {
-        <div>
             @foreach (var attachment in Model.Attachments)
             {
                 var path = attachment.FilePath;
@@ -111,16 +133,19 @@
                 var relativePath = path.Replace(@"C:\Users\majew\source\repos\BaldurBillsApp\BaldurBillsApp\wwwroot", "");
                 // Dekodowanie URL, jeśli potrzebne
                 var urlPath = Url.Content("~" + relativePath.Replace("\\", "/"));
-                <img src="@urlPath" alt="Invoice Image" style="max-width: 600px; height: 600px;">
+                <div class="pdf-viewer">
+                    <embed src="@urlPath" type="application/pdf" width="600" height="500" />
+                </div>
             }
-        </div>
     }
     else
     {
         <p>No images available.</p>
     }
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.InvoiceId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+    </div>
+    </<div>
+
+        <div class="buttons">
+        <a asp-action="Edit" asp-route-id="@Model?.InvoiceId">Edit</a> |
+        <a asp-action="Index">Back to List</a>
+    </div>
