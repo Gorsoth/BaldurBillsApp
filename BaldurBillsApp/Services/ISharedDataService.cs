@@ -6,6 +6,8 @@ namespace BaldurBillsApp.Services
     {
     SelectList GetVendors();
     SelectList GetCurrencies();
+
+    SelectList GetCostTypes();
  
     }
 }

@@ -43,6 +43,13 @@
                 <input asp-for="Title" class="form-control" />
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
+
+            <!-- Dynamicznie dodawane pozycje faktury -->
+            <div id="invoiceItemsContainer">
+                <!-- Tutaj będą dodawane pozycje -->
+            </div>
+            <button type="button" onclick="addItem()">Add Item</button>
+
             <div class="form-group">
                 <label asp-for="NetAmount" class="control-label"></label>
                 <input asp-for="NetAmount" class="form-control" />
@@ -118,6 +125,7 @@
             }
         });
     </script>
+
     <script>
         var currencyList = @Html.Raw(Json.Serialize(ViewBag.CurrencyList));
         document.getElementById('currencyInput').addEventListener('input', function () {
@@ -129,5 +137,51 @@
                 document.getElementById('InvoicesIdField').value = null;
             }
         });
+    </script>
+
+    <script>
+        function addItem() {
+
+
+
+            var container = document.getElementById("invoiceItemsContainer");
+
+            var index = container.children.length; // Pobiera indeks dla nowego elementu
+            // Tworzenie nowego diva dla elementu faktury
+            var itemDiv = document.createElement("div");
+            itemDiv.className = "invoice-item";
+            itemDiv.id = `item-${index}`;
+
+
+            itemDiv.innerHTML = `
+                        <input type="text" name="InvoiceItems[${index}].NetAmount" placeholder="Net Amount" class="form-control" onchange="updateGrossAmount(this)" />
+                        <input type="text" name="InvoiceItems[${index}].VatRate" placeholder="VAT Rate" class="form-control" onchange="updateGrossAmount(this)" />
+                        <input type="text" name="InvoiceItems[${index}].GrossAmount" placeholder="Gross Amount" readonly class="form-control" />
+                                <select name="InvoiceItems[${index}].CostId" class="form-control">
+        @foreach (var type in ViewBag.costTypes)
+        {
+                                                <option value="@type.Value">@type.Text</option>
+        }
+         </select>
+                <button type="button" onclick="removeItem(${index})" class="btn btn-danger">Delete</button>`;
+            // Dodawanie elementu do kontenera
+            container.appendChild(itemDiv);
+        }
+
+        function updateGrossAmount(element) {
+            var itemDiv = element.closest('.invoice-item'); // Znajdź nadrzędny div dla elementu faktury
+            var netAmount = parseFloat(itemDiv.querySelector('input[name^="InvoiceItems["][name$="].NetAmount"]').value) || 0; // Użyj poprawnych selektorów
+            var vatRate = parseFloat(itemDiv.querySelector('input[name^="InvoiceItems["][name$="].VatRate"]').value) || 0;
+            var grossAmountInput = itemDiv.querySelector('input[name^="InvoiceItems["][name$="].GrossAmount"]');
+
+            grossAmountInput.value = (netAmount + netAmount * vatRate / 100).toFixed(2);
+        }
+
+        function removeItem(index) {
+            var item = document.getElementById(`item-${index}`);
+            if (item) {
+                item.remove();
+            }
+        }
     </script>
 }

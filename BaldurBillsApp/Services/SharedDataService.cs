@@ -34,5 +34,13 @@ namespace BaldurBillsApp.Services
                             .ToList();
             return new SelectList(currencies, "CurrencyName", "CurrencyName");
         }
+
+        public SelectList GetCostTypes()
+        {
+            var costTypes = _context.CostTypes
+                            .Select(c => new { Text = c.CostName, Value = c.CostId })
+                           .ToList();
+            return new SelectList(costTypes, "Value", "Text");
+        }
     }
 }

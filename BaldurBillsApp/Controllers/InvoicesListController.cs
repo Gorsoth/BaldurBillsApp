@@ -68,6 +68,7 @@ namespace BaldurBillsApp.Controllers
         {
             ViewBag.vendors = _sharedDataService.GetVendors();
             ViewBag.CurrencyList = _sharedDataService.GetCurrencies();
+            ViewBag.costTypes = _sharedDataService.GetCostTypes();
             return View();
         }
 
@@ -76,7 +77,7 @@ namespace BaldurBillsApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("InvoiceId,InvoiceDate,InvoiceNumber,VendorId,Title,NetAmount,GrossAmount,Currency,DueDate,IsPaid,PaymentDate,Comment,RateDate,RateId")] InvoicesList invoicesList, List<IFormFile> files)
+        public async Task<IActionResult> Create([Bind("InvoiceId,InvoiceDate,InvoiceNumber,VendorId,Title,NetAmount,GrossAmount,Currency,DueDate,IsPaid,PaymentDate,Comment,RateDate,RateId,InvoiceItems")] InvoicesList invoicesList, List<IFormFile> files)
         {
             if (ModelState.IsValid)
             {
