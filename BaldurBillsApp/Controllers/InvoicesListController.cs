@@ -85,6 +85,12 @@ namespace BaldurBillsApp.Controllers
                     ModelState.AddModelError("", "Invoice with this number already exists for this vendor. Please, enter different data.");
                     return Create();
                 }
+
+                if (invoicesList.InvoiceDate > DateOnly.FromDateTime(DateTime.Today))
+                {
+                    ModelState.AddModelError("", "You cannot enter an invoice with the date later than today.");
+                    return Create();
+                }
                 invoicesList.EntryDate = DateOnly.FromDateTime(DateTime.Now);
 
                 //funkcja kolejny numer w bazi / datetime miesiac / rok
