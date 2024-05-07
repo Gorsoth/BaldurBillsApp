@@ -95,6 +95,13 @@ namespace BaldurBillsApp.Controllers
                     ModelState.AddModelError("", "You cannot enter an invoice with the date later than today.");
                     return Create(invoicesList);
                 }
+
+                if (invoicesList.InvoiceItems != null && invoicesList.InvoiceItems.Any())
+                {
+                    invoicesList.NetAmount = UpdateNetAmount(invoicesList.InvoiceItems);
+                    invoicesList.GrossAmount = UpdateGrossAmount(invoicesList.InvoiceItems);
+                }
+
                 invoicesList.EntryDate = DateOnly.FromDateTime(DateTime.Now);
 
                 //funkcja kolejny numer w bazi / datetime miesiac / rok
@@ -254,6 +261,18 @@ namespace BaldurBillsApp.Controllers
         {
             bool check = _context.InvoicesLists.Any(x => x.VendorId == vendorId && x.InvoiceNumber == invoiceNumber);
             return check;
+        }
+
+        private decimal? UpdateNetAmount(List<InvoiceItem> invoiceItem)
+        {
+            decimal? netAmount = invoiceItem.Sum(x => x.NetAmount);
+            return netAmount;
+        }
+
+        private decimal? UpdateGrossAmount(List<InvoiceItem> invoiceItem)
+        {
+            decimal? grossAmount = invoiceItem.Sum(x => x.GrossAmount);
+            return grossAmount;
         }
     }
 }
