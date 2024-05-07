@@ -64,12 +64,15 @@ namespace BaldurBillsApp.Controllers
         }
 
         // GET: InvoicesList/Create
-        public IActionResult Create()
+        public IActionResult Create(InvoicesList invoicesList = null)
         {
             ViewBag.vendors = _sharedDataService.GetVendors();
             ViewBag.CurrencyList = _sharedDataService.GetCurrencies();
             ViewBag.costTypes = _sharedDataService.GetCostTypes();
-            return View();
+            var model = new InvoicesList();
+            model.InvoiceItems = new List<InvoiceItem>(); // Zapewnia, że lista jest zainicjowana
+            model = invoicesList;
+            return View(model);
         }
 
         // POST: InvoicesList/Create
@@ -77,20 +80,20 @@ namespace BaldurBillsApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("InvoiceId,InvoiceDate,InvoiceNumber,VendorId,Title,NetAmount,GrossAmount,Currency,DueDate,IsPaid,PaymentDate,Comment,RateDate,RateId,InvoiceItems")] InvoicesList invoicesList, List<IFormFile> files)
+        public async Task<IActionResult> Create(InvoicesList invoicesList, List<IFormFile> files)
         {
             if (ModelState.IsValid)
             {
                 if (IsInvoiceDoubled(invoicesList.VendorId, invoicesList.InvoiceNumber))
                 {
                     ModelState.AddModelError("", "Invoice with this number already exists for this vendor. Please, enter different data.");
-                    return Create();
+                    return Create(invoicesList);
                 }
 
                 if (invoicesList.InvoiceDate > DateOnly.FromDateTime(DateTime.Today))
                 {
                     ModelState.AddModelError("", "You cannot enter an invoice with the date later than today.");
-                    return Create();
+                    return Create(invoicesList);
                 }
                 invoicesList.EntryDate = DateOnly.FromDateTime(DateTime.Now);
 

@@ -49,7 +49,7 @@ public partial class InvoicesList
 
     public virtual ICollection<Attachment> Attachments { get; set; } = new List<Attachment>();
 
-    public virtual ICollection<InvoiceItem> InvoiceItems { get; set; } = new List<InvoiceItem>();
+    public virtual List<InvoiceItem> InvoiceItems { get; set; } = new List<InvoiceItem>();
 
     public virtual ToPlnRate? Rate { get; set; }
 

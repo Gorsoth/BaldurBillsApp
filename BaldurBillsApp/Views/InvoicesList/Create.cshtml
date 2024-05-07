@@ -46,7 +46,19 @@
 
             <!-- Dynamicznie dodawane pozycje faktury -->
             <div id="invoiceItemsContainer">
-                <!-- Tutaj będą dodawane pozycje -->
+                @if (Model != null && Model.InvoiceItems != null)
+                {
+                    for (int i = 0; i < Model.InvoiceItems.Count; i++)
+                    {
+                        <div class="invoice-item" id="item-@i">
+                            <input asp-for="@Model.InvoiceItems[i].NetAmount" class="form-control" />
+                            <input asp-for="@Model.InvoiceItems[i].VatRate" class="form-control" />
+                            <input asp-for="@Model.InvoiceItems[i].GrossAmount" class="form-control" />
+                            <select asp-for="@Model.InvoiceItems[i].CostId" asp-items="@(new SelectList(ViewBag.CostTypes, "Value", "Text"))"></select>
+                            <button type="button" data-index="@i" onclick="removeItem(@i)" class="btn btn-danger">Delete</button>
+                        </div>
+                    }
+                }
             </div>
             <button type="button" onclick="addItem()">Add Item</button>
 
@@ -143,7 +155,6 @@
         function addItem() {
 
 
-
             var container = document.getElementById("invoiceItemsContainer");
 
             var index = container.children.length; // Pobiera indeks dla nowego elementu
@@ -156,7 +167,7 @@
             itemDiv.innerHTML = `
                         <input type="text" name="InvoiceItems[${index}].NetAmount" placeholder="Net Amount" class="form-control" onchange="updateGrossAmount(this)" />
                         <input type="text" name="InvoiceItems[${index}].VatRate" placeholder="VAT Rate" class="form-control" onchange="updateGrossAmount(this)" />
-                        <input type="text" name="InvoiceItems[${index}].GrossAmount" placeholder="Gross Amount" readonly class="form-control" />
+                        <input type="text" name="InvoiceItems[${index}].GrossAmount" placeholder="Gross Amount" class="form-control" />
                                 <select name="InvoiceItems[${index}].CostId" class="form-control">
         @foreach (var type in ViewBag.costTypes)
         {
@@ -174,7 +185,9 @@
             var vatRate = parseFloat(itemDiv.querySelector('input[name^="InvoiceItems["][name$="].VatRate"]').value) || 0;
             var grossAmountInput = itemDiv.querySelector('input[name^="InvoiceItems["][name$="].GrossAmount"]');
 
-            grossAmountInput.value = (netAmount + netAmount * vatRate / 100).toFixed(2);
+            var calculatedValue = (netAmount + netAmount * vatRate / 100).toFixed(2);
+            grossAmountInput.value = calculatedValue; // Ustawianie wartości
+            console.log("Updated Gross Amount to: ", calculatedValue); // Logowanie dla sprawdzenia
         }
 
         function removeItem(index) {
