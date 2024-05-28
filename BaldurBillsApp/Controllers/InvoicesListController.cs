@@ -115,6 +115,14 @@ namespace BaldurBillsApp.Controllers
                 _context.Add(invoicesList);
                 await _context.SaveChangesAsync();
 
+                var tempDate = invoicesList.InvoiceDate.Value.AddDays(-1);
+                var rateDate = _context.ToPlnRates
+                                .Where(r => r.RateDate <= tempDate)
+                                .OrderBy(r => r.RateDate)
+                                .Last();
+
+                invoicesList.RateDate = rateDate.RateDate;
+
                 if (files != null && files.Count > 0)
                 {
                     foreach (var file in files)

@@ -43,23 +43,23 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-//// Create a scope to get the NbpRateService
-//using (var scope = app.Services.CreateScope())
-//{
-//    var services = scope.ServiceProvider;
-//    try
-//    {
-//        // Get the service instance
-//        var nbpRateService = services.GetRequiredService<NbpRateService>();
-//        // Manually invoke the FetchAndSaveRatesAsync method
-//        await nbpRateService.FetchAndSaveRatesAsync();
-//    }
-//    catch (Exception ex)
-//    {
-//        // Log or handle the exception as needed
-//        var logger = services.GetRequiredService<ILogger<Program>>();
-//        logger.LogError(ex, "An error occurred while fetching and saving rates.");
-//    }
-//}
+// Create a scope to get the NbpRateService
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        // Get the service instance
+        var nbpRateService = services.GetRequiredService<NbpRateService>();
+        // Manually invoke the FetchAndSaveRatesAsync method
+        await nbpRateService.FetchAndSaveRatesAsync();
+    }
+    catch (Exception ex)
+    {
+        // Log or handle the exception as needed
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while fetching and saving rates.");
+    }
+}
 
 app.Run();
