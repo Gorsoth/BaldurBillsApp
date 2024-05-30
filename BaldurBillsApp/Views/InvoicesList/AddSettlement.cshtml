@@ -1,0 +1,27 @@
+﻿@model BaldurBillsApp.ViewModels.AddSettlementViewModel
+
+
+<h2>Add Settlement for Invoice @Model.InvoiceID</h2>
+
+<form asp-action="AddSettlement" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="form-group">
+        <label asp-for="SettlementDate"></label>
+        <input asp-for="SettlementDate" class="form-control" />
+        <span asp-validation-for="SettlementDate" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="SettlementAmount"></label>
+        <input asp-for="SettlementAmount" class="form-control" />
+        <span asp-validation-for="SettlementAmount" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="PrepaymentID"></label>
+        <input asp-for="PrepaymentID" class="form-control" />
+        <span asp-validation-for="PrepaymentID" class="text-danger"></span>
+    </div>
+    <input type="hidden" asp-for="InvoiceID" />
+    <input type="hidden" asp-for="RemainingAmount" />
+    <button type="submit" class="btn btn-primary">Add Settlement</button>
+</form>
+

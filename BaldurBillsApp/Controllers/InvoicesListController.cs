@@ -9,6 +9,8 @@ using BaldurBillsApp.Models;
 using BaldurBillsApp.Services;
 using Microsoft.Extensions.Hosting.Internal;
 using Microsoft.AspNetCore.Hosting;
+using BaldurBillsApp.ViewModels;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace BaldurBillsApp.Controllers
 {
@@ -61,6 +63,105 @@ namespace BaldurBillsApp.Controllers
             }
 
             return View(invoicesList);
+        }
+
+        public decimal CalculateRemainingAmount(decimal? invoiceAmount, List<Settlement> settlementAmount)
+        {
+            decimal totalSettlements = settlementAmount.Sum(s => s.SettlementAmount) ?? 0;
+            decimal remainingAmount = (invoiceAmount ?? 0) - totalSettlements;
+            return remainingAmount;
+        }
+
+        // GET: InvoicesList/Settlement/{invoiceId}
+        [HttpGet]
+        public IActionResult Settlement(int id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var invoicesList = _context.InvoicesLists.FirstOrDefault(i => i.InvoiceId == id);
+            if (invoicesList == null)
+            {
+                return NotFound();
+            }
+
+            var settlements = _context.Settlements.Where(s => s.InvoiceId == id).ToList();
+
+            decimal remainingAmount = CalculateRemainingAmount(invoicesList.GrossAmount, settlements);
+
+            var viewModel = new SettlementViewModel
+            {
+                InvoiceList = invoicesList,
+                Settlements = settlements,
+                RemainingAmount = remainingAmount
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpGet]
+        public IActionResult AddSettlement(int invoiceId)
+        {
+            var invoice = _context.InvoicesLists.FirstOrDefault(i => i.InvoiceId == invoiceId);
+            decimal remainingAmount = (invoice.GrossAmount ?? 0) - _context.Settlements.Where(s => s.InvoiceId == invoiceId).Sum(s => s.SettlementAmount) ?? 0;
+
+            var viewModel = new AddSettlementViewModel
+            {
+                InvoiceID = invoiceId,
+                RemainingAmount = remainingAmount
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        public IActionResult AddSettlement(AddSettlementViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                if (model.SettlementAmount <= model.RemainingAmount)
+                {
+                    var newSettlement = new Settlement
+                    {
+                        InvoiceId = model.InvoiceID,
+                        SettlementDate = model.SettlementDate,
+                        SettlementAmount = model.SettlementAmount,
+                        PrepaymentId = model.PrepaymentID
+
+                    };
+
+                    _context.Settlements.Add(newSettlement);
+                    _context.SaveChanges();
+
+                    var invoice = _context.InvoicesLists.FirstOrDefault(i => i.InvoiceId == model.InvoiceID);
+                    if (invoice != null)
+                    {
+                        var settlements = _context.Settlements.Where(s => s.InvoiceId == model.InvoiceID).ToList();
+                        var remainingAmount = CalculateRemainingAmount(invoice.GrossAmount, settlements);
+
+                        if(remainingAmount == 0)
+                        {
+                            invoice.IsPaid = true;
+                            invoice.PaymentDate = _context.Settlements
+                                .Where(s => s.InvoiceId == model.InvoiceID)
+                                .OrderByDescending(s => s.SettlementDate)
+                                .FirstOrDefault()?.SettlementDate;
+
+                            _context.InvoicesLists.Update(invoice);
+                            _context.SaveChanges();
+                        }
+                    } 
+
+                        return Redirect("/InvoicesList/Settlement/" + model.InvoiceID);
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Settlement amount cannot be greater than the remaining amount.");
+                }
+            }
+            return View(model);
         }
 
         // GET: InvoicesList/Create

@@ -1,0 +1,32 @@
+﻿@model BaldurBillsApp.ViewModels.SettlementViewModel
+
+@{
+    ViewData["Title"] = "Settlement";
+}
+
+<h1>Settlement</h1>
+<p>
+    Gross Amount: @Model.InvoiceList.GrossAmount<br />
+    Total Settlements: @Model.Settlements.Sum(s => s.SettlementAmount)<br />
+    Remaining Amount: @Model.RemainingAmount
+</p>
+
+<table>
+    <thead>
+        <tr>
+            <th>Settlement Date</th>
+            <th>Settlement Amount</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var settlement in Model.Settlements)
+        {
+            <tr>
+                <td>@settlement.SettlementDate</td>
+                <td>@settlement.SettlementAmount</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a href="@Url.Action("AddSettlement", new {invoiceId = Model.InvoiceList.InvoiceId})" class="btn btn-primary">Add payment</a>

@@ -16,13 +16,13 @@
                 @Html.DisplayNameFor(model => model.RegistryNumber)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Vendor)
+                @Html.DisplayNameFor(model => model.InvoiceDate)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.InvoiceNumber)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.InvoiceDate)
+                @Html.DisplayNameFor(model => model.Vendor)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Title)
@@ -39,20 +39,12 @@
             <th>
                 @Html.DisplayNameFor(model => model.DueDate)
             </th>
+
+            <th>
+                @Html.DisplayNameFor(model => model.IsPaid)
+            </th>
             <th>
                 @Html.DisplayNameFor(model => model.PaymentDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EntryDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Comment)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.RateDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Rate)
             </th>
             <th></th>
         </tr>
@@ -69,6 +61,9 @@
             <td>
                 @Html.DisplayFor(modelItem => item.InvoiceNumber)
             </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Vendor.VendorName)
+                </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Title)
             </td>
@@ -91,24 +86,10 @@
                 @Html.DisplayFor(modelItem => item.PaymentDate)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.EntryDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Comment)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.RateDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Rate.RateId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Vendor.VendorId)
-            </td>
-            <td>
                 <a asp-action="Edit" asp-route-id="@item.InvoiceId">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.InvoiceId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.InvoiceId">Delete</a>
+                <a asp-action="Delete" asp-route-id="@item.InvoiceId">Delete</a> |
+                    <a asp-action="Settlement" asp-route-id="@item.InvoiceId">Settlement</a>
             </td>
         </tr>
 }
