@@ -11,6 +11,8 @@ using Microsoft.Extensions.Hosting.Internal;
 using Microsoft.AspNetCore.Hosting;
 using BaldurBillsApp.ViewModels;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using AutoMapper;
+using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
 
 namespace BaldurBillsApp.Controllers
 {
@@ -20,13 +22,15 @@ namespace BaldurBillsApp.Controllers
         private readonly ISharedDataService _sharedDataService;
         private readonly IWebHostEnvironment _hostingEnvironment;
         private readonly PdfService _pdfService;
+        private readonly IMapper _mapper;
 
-        public InvoicesListController(BaldurBillsDbContext context, ISharedDataService sharedDataService, IWebHostEnvironment hostingEnvironment, PdfService pdfService)
+        public InvoicesListController(BaldurBillsDbContext context, ISharedDataService sharedDataService, IWebHostEnvironment hostingEnvironment, PdfService pdfService, IMapper mapper)
         {
             _context = context;
             _sharedDataService = sharedDataService;
             _hostingEnvironment = hostingEnvironment; // Przypisanie wstrzykniętego obiektu do lokalnej zmiennej
             _pdfService = pdfService;
+            _mapper = mapper;
         }
 
         // Metoda, która używa _hostingEnvironment
@@ -91,14 +95,93 @@ namespace BaldurBillsApp.Controllers
 
             decimal remainingAmount = CalculateRemainingAmount(invoicesList.GrossAmount, settlements);
 
+            var prepayments = _context.Prepayments
+                .Where(p => p.VendorId == invoicesList.VendorId)
+                .AsEnumerable() 
+                .Where(p => (p.IsSettled == false || p.IsSettled == null) && p.RemainingAmount > 0)
+                .ToList(); 
+            var prepaymentsViewModel = _mapper.Map<List<PrepaymentViewModel>>(prepayments);
+
             var viewModel = new SettlementViewModel
             {
                 InvoiceList = invoicesList,
                 Settlements = settlements,
-                RemainingAmount = remainingAmount
+                RemainingAmount = remainingAmount,
+                Prepayments = prepaymentsViewModel
             };
 
             return View(viewModel);
+        }
+
+        [HttpPost]
+        public IActionResult ProcessPrepayments(int invoiceId, int[] selectedPrepayments)
+        {
+            var invoice = _context.InvoicesLists.FirstOrDefault(i => i.InvoiceId == invoiceId);
+            var settlements = _context.Settlements.Where(s => s.InvoiceId == invoiceId).ToList();
+
+            decimal? remainingAmount = CalculateRemainingAmount(invoice.GrossAmount, settlements);
+
+            if (invoice == null)
+            {
+                return NotFound();
+            }
+
+            var counter = 0;
+            // Logika przetwarzania przedpłat
+            for (int i = 0; i < selectedPrepayments.Length; i++)
+            {
+                counter = i + 1;
+                var prepayment = _context.Prepayments.FirstOrDefault( p=> p.PrepaymentId == selectedPrepayments[i]);
+                if (prepayment != null)
+                {
+                    remainingAmount -= prepayment.RemainingAmount;
+                    if (remainingAmount <= 0)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            remainingAmount = CalculateRemainingAmount(invoice.GrossAmount, settlements);
+            List<Prepayment> updatedPrepayments = new List<Prepayment>();
+            List<Settlement> newSetllements = new List<Settlement>();
+
+            for (int k =0; k < counter; k++) 
+            {
+                var prepayment = _context.Prepayments.FirstOrDefault(p => p.PrepaymentId == selectedPrepayments[k]);
+                decimal? settlementAmount = 0;
+
+                prepayment.RemainingAmount -= remainingAmount;
+                if (prepayment.RemainingAmount <= 0)
+                {
+                    settlementAmount = remainingAmount - prepayment.RemainingAmount;
+                    prepayment.RemainingAmount = 0;
+                    invoice.IsPaid = true;
+                } else
+                {
+                    settlementAmount = remainingAmount;
+                    prepayment.IsSettled = true;
+                }
+
+                var settlement = new Settlement
+                {
+                    InvoiceId = invoiceId,
+                    SettlementDate = prepayment.PrepaymentDate,
+                    SettlementAmount = settlementAmount,
+                    PrepaymentId = prepayment.PrepaymentId
+                };
+                newSetllements.Add(settlement);
+                updatedPrepayments.Add(prepayment);
+            }
+
+            _context.Settlements.AddRange(newSetllements);
+            _context.Prepayments.UpdateRange(updatedPrepayments);
+            _context.InvoicesLists.Update(invoice);
+            _context.SaveChanges();
+
+
+            // Przekieruj z powrotem do widoku Settlement
+            return Redirect("/InvoicesList/Settlement/" + invoiceId);
         }
 
         [HttpGet]

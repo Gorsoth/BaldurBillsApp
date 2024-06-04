@@ -11,6 +11,9 @@
     Remaining Amount: @Model.RemainingAmount
 </p>
 
+
+
+
 <table>
     <thead>
         <tr>
@@ -28,5 +31,35 @@
         }
     </tbody>
 </table>
-
 <a href="@Url.Action("AddSettlement", new {invoiceId = Model.InvoiceList.InvoiceId})" class="btn btn-primary">Add payment</a>
+
+
+<h3>Prepayments</h3>
+<form asp-action="ProcessPrepayments" method="post">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Select</th>
+                <th>PrepaymentRegistryNumber</th>
+                <th>Prepayment Amount</th>
+                <th>Remaining Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var prepayment in Model.Prepayments)
+            {
+                <tr>
+                    <td>
+                        <input type="checkbox" asp-for="@prepayment.IsSelected" class="form-check-input" value="@prepayment.PrepaymentID" name="selectedPrepayments" />
+                    </td>
+                    <td>@prepayment.PrepaymentRegistryNumber</td>
+                    <td>@prepayment.PrepaymentAmount</td>
+                    <td>@prepayment.RemainingAmount</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <input type="hidden" asp-for="InvoiceList.InvoiceId" name="InvoiceID" />
+    <button type="submit" class="btn btn-primary">Apply Prepayments</button>
+</form>
+

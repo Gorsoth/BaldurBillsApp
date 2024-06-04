@@ -28,6 +28,7 @@ public partial class Prepayment
     public bool? IsSettled
     {
         get { return RemainingAmount == 0.00m; }
+        set { }
     }
 
     [Display(Name = "Entry date")]

@@ -7,5 +7,7 @@ namespace BaldurBillsApp.ViewModels
         public InvoicesList InvoiceList { get; set; }
         public List<Settlement> Settlements { get; set; }
         public decimal RemainingAmount { get; set; }
+
+        public List<PrepaymentViewModel> Prepayments { get; set; }  // Lista przedpłat
     }
 }

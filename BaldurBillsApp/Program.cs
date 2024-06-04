@@ -20,6 +20,7 @@ builder.Services.AddDbContext<BaldurBillsDbContext>(options =>
 builder.Services.AddScoped<ISharedDataService, SharedDataService>();
 
 builder.Services.AddScoped<PdfService>();
+builder.Services.AddAutoMapper(typeof(Program));
 
 
 var app = builder.Build();
