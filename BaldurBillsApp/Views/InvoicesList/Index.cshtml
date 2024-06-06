@@ -6,6 +6,14 @@
 
 <h1>Index</h1>
 
+<form method="get" asp-action="Index">
+    <div class="form-group">
+        <label for="SearchTerm">Search</label>
+        <input type="text" name="SearchTerm" class="form-control" value="@ViewData["SearchTerm"]" placeholder="Search by any field..." />
+    </div>
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
+
 <p>
     <a asp-action="Create">Create New</a>
 </p>

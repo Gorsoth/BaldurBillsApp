@@ -42,10 +42,29 @@ namespace BaldurBillsApp.Controllers
         }
 
         // GET: InvoicesList
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchTerm)
         {
-            var baldurBillsDbContext = _context.InvoicesLists.Include(i => i.Rate).Include(i => i.Vendor);
-            return View(await baldurBillsDbContext.ToListAsync());
+            ViewData["SearchTerm"] = searchTerm;
+
+            var invoices = _context.InvoicesLists
+                .Include(i => i.Rate)
+                .Include(i => i.Vendor)
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                invoices = invoices.Where(i =>
+                    i.RegistryNumber.Contains(searchTerm) ||
+                    i.InvoiceNumber.Contains(searchTerm) ||
+                    i.Vendor.VendorName.Contains(searchTerm) ||
+                    i.Title.Contains(searchTerm) ||
+                    i.InvoiceDate.ToString().Contains(searchTerm) ||
+                    i.GrossAmount.ToString().Contains(searchTerm) ||
+                    i.NetAmount.ToString().Contains(searchTerm) ||
+                    i.Currency.Contains(searchTerm));
+            }
+
+            return View(await invoices.ToListAsync());
         }
 
         // GET: InvoicesList/Details/5

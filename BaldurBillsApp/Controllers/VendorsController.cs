@@ -19,9 +19,24 @@ namespace BaldurBillsApp.Controllers
         }
 
         // GET: Vendors
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchTerm)
         {
-            return View(await _context.Vendors.ToListAsync());
+            ViewData["SearchTerm"] = searchTerm;
+
+            var vendors = _context.Vendors.AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                vendors = vendors.Where(v =>
+                    v.VendorName.Contains(searchTerm) ||
+                    v.Address.Contains(searchTerm) ||
+                    v.Country.Contains(searchTerm) ||
+                    v.VatId.Contains(searchTerm) ||
+                    v.Swift.Contains(searchTerm) ||
+                    v.AccountNumber.Contains(searchTerm));
+            }
+
+            return View(await vendors.ToListAsync());
         }
 
         // GET: Vendors/Details/5

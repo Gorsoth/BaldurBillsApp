@@ -23,10 +23,25 @@ namespace BaldurBillsApp.Controllers
         }
 
         // GET: Prepayments
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchTerm)
         {
-            var baldurBillsDbContext = _context.Prepayments.Include(p => p.Vendor);
-            return View(await baldurBillsDbContext.ToListAsync());
+            ViewData["SearchTerm"] = searchTerm;
+
+            var prepayments = _context.Prepayments
+                .Include(p => p.Vendor)
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                prepayments = prepayments.Where(p =>
+                    p.Vendor.VendorName.Contains(searchTerm) ||
+                    p.PrepaymentRegistryNumber.ToString().Contains(searchTerm) ||
+                    p.PrepaymentCurrency.ToString().Contains(searchTerm) ||
+                    p.IsSettled.ToString().Contains(searchTerm) ||
+                    p.PrepaymentDate.ToString().Contains(searchTerm));
+            }
+
+            return View(await prepayments.ToListAsync());
         }
 
         // GET: Prepayments/Details/5
