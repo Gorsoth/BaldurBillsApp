@@ -1,0 +1,51 @@
+﻿@model IEnumerable<BaldurBillsApp.Models.InvoicesList>
+
+@{
+    ViewData["Title"] = "Unpaid Invoices Report";
+}
+
+<h1>Unpaid Invoices Report</h1>
+
+<form method="get" asp-action="UnpaidInvoices">
+    <div class="form-group">
+        <label for="vendorId">Vendor</label>
+        <select name="vendorId" class="form-control">
+            <option value="">Select Vendor</option>
+            @if (ViewBag.Vendors != null)
+            {
+                @foreach (var vendor in ViewBag.Vendors)
+                {
+                    <option value="@vendor.VendorId">@vendor.Name</option>
+                }
+            }
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Generate Report</button>
+    <a class="btn btn-secondary" asp-action="UnpaidInvoices" asp-route-vendorId="@ViewBag.SelectedVendor">Download as PDF</a>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Invoice Number</th>
+            <th>Vendor</th>
+            <th>Title</th>
+            <th>Invoice Date</th>
+            <th>Due Date</th>
+            <th>Gross Amount</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var invoice in Model)
+        {
+            <tr>
+                <td>@invoice.InvoiceNumber</td>
+                <td>@invoice.Vendor.VendorName</td>
+                <td>@invoice.Title</td>
+                <td>@invoice.InvoiceDate.Value.ToString("yyyy-MM-dd")</td>
+                <td>@(invoice.DueDate.HasValue ? invoice.DueDate.Value.ToString("yyyy-MM-dd") : "")</td>
+                <td>@invoice.GrossAmount</td>
+            </tr>
+        }
+    </tbody>
+</table>

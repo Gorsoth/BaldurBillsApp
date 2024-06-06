@@ -1,0 +1,42 @@
+﻿@model IEnumerable<BaldurBillsApp.Models.Settlement>
+
+@{
+    ViewData["Title"] = "Payments Report";
+}
+
+<h1>Payments Report</h1>
+
+<form method="get" asp-action="Payments">
+    <div class="form-group">
+        <label for="startDate">Start Date</label>
+        <input type="date" name="startDate" class="form-control" value="@ViewData["startDate"]" />
+    </div>
+    <div class="form-group">
+        <label for="endDate">End Date</label>
+        <input type="date" name="endDate" class="form-control" value="@ViewData["endDate"]" />
+    </div>
+    <button type="submit" class="btn btn-primary">Generate Report</button>
+    <a class="btn btn-secondary" asp-action="PaymentsPdf" asp-route-startDate="@ViewData["startDate"]" asp-route-endDate="@ViewData["endDate"]">Download as PDF</a>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Invoice Number</th>
+            <th>Vendor</th>
+            <th>Settlement Date</th>
+            <th>Settlement Amount</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var payment in Model)
+        {
+            <tr>
+                <td>@payment.Invoice.InvoiceNumber</td>
+                <td>@payment.Invoice.Vendor.VendorName</td>
+                <td>@payment.SettlementDate.Value.ToString("yyyy-MM-dd")</td>
+                <td>@payment.SettlementAmount</td>
+            </tr>
+        }
+    </tbody>
+</table>

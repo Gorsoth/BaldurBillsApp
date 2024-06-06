@@ -2,6 +2,7 @@
 using iText.Layout;
 using iText.Layout.Element;
 using iText.Layout.Properties;
+using System.Drawing;
 using System.IO;
 
 namespace BaldurBillsApp.Services
@@ -13,9 +14,9 @@ namespace BaldurBillsApp.Services
             PdfDocument pdf = new PdfDocument(new PdfReader(pdfPath), new PdfWriter(pdfEditedPath));
             Document document = new Document(pdf);
 
-                Paragraph header = new Paragraph(registryNumber)
-                    .SetTextAlignment(TextAlignment.CENTER)
-                    .SetFontSize(18);
+            Paragraph header = new Paragraph(registryNumber)
+                .SetTextAlignment(TextAlignment.CENTER)
+                .SetFontSize(18);
 
             Paragraph foot = new Paragraph(currencyRate)
                 .SetTextAlignment(TextAlignment.CENTER)
@@ -26,6 +27,21 @@ namespace BaldurBillsApp.Services
 
 
             document.Close();
+        }
+
+        public byte[] GeneratePdf(string textContent)
+        {
+            using (MemoryStream ms = new MemoryStream())
+            {
+                PdfWriter writer = new PdfWriter(ms);
+                PdfDocument pdf = new PdfDocument(writer);
+                Document document = new Document(pdf);
+
+                document.Add(new Paragraph(textContent));
+
+                document.Close();
+                return ms.ToArray();
+            }
         }
     }
 }

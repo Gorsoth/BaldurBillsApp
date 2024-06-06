@@ -1,0 +1,45 @@
+﻿@{
+    ViewData["Title"] = "Reports";
+}
+
+<h1>Reports</h1>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <h2>Generate Reports</h2>
+
+            <!-- Payments Report Form -->
+            <form method="get" asp-action="Payments">
+                <h3>Payments Report</h3>
+                <div class="form-group">
+                    <label for="startDate">Start Date</label>
+                    <input type="date" name="startDate" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label for="endDate">End Date</label>
+                    <input type="date" name="endDate" class="form-control" />
+                </div>
+                <button type="submit" class="btn btn-primary">Generate Report</button>
+                <a class="btn btn-secondary" asp-action="PaymentsPdf" asp-route-startDate="@ViewData["startDate"]" asp-route-endDate="@ViewData["endDate"]">Download as PDF</a>
+            </form>
+
+            <!-- Unpaid Invoices Report Form -->
+            <form method="get" asp-action="UnpaidInvoices">
+                <h3>Unpaid Invoices Report</h3>
+                <div class="form-group">
+                    <label for="vendorId">Vendor</label>
+                    <select name="vendorId" class="form-control">
+                        <option value="">Select Vendor</option>
+                        @foreach (var vendor in ViewBag.Vendors)
+                        {
+                            <option value="@vendor.VendorId">@vendor.VendorName</option>
+                        }
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Generate Report</button>
+                <a class="btn btn-secondary" asp-action="UnpaidInvoicesPdf" asp-route-vendorId="@ViewBag.SelectedVendor">Download as PDF</a>
+            </form>
+        </div>
+    </div>
+</div>
