@@ -21,10 +21,10 @@ public partial class InvoicesList
 
     public string? Title { get; set; }
 
-    [Display(Name = "Net amount")]
+    [Display(Name = "Net")]
     public decimal? NetAmount { get; set; }
 
-    [Display(Name = "Gross amount")]
+    [Display(Name = "Gross")]
     public decimal? GrossAmount { get; set; }
 
     public string? Currency { get; set; }
@@ -32,6 +32,7 @@ public partial class InvoicesList
     [Display(Name = "Due date")]
     public DateOnly? DueDate { get; set; }
 
+    [Display(Name = "Is paid")]
     public bool? IsPaid { get; set; }
 
     [Display(Name = "Payment date")]

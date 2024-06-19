@@ -1,105 +1,111 @@
 ﻿@model IEnumerable<BaldurBillsApp.Models.InvoicesList>
 
 @{
-    ViewData["Title"] = "Index";
+	ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
-
 <form method="get" asp-action="Index">
-    <div class="form-group">
-        <label for="SearchTerm">Search</label>
-        <input type="text" name="SearchTerm" class="form-control" value="@ViewData["SearchTerm"]" placeholder="Search by any field..." />
-    </div>
-    <button type="submit" class="btn btn-primary">Search</button>
+	<div class="form-group">
+		<label for="SearchTerm"><h6>Search</h6></label>
+		<input type="text" name="SearchTerm" class="form-control mb-2" value="@ViewData["SearchTerm"]" placeholder="Search by any field..." />
+	</div>
+	<button type="submit" class="btn btn-primary mb-2">Search</button>
 </form>
 
 <p>
-    <a asp-action="Create">Create New</a>
+	<a asp-action="Create" class="btn btn-primary">Create New</a>
 </p>
 <table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.RegistryNumber)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.InvoiceDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.InvoiceNumber)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Vendor)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Title)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.NetAmount)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.GrossAmount)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Currency)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DueDate)
-            </th>
+	<thead>
+		<tr>
+			<th>
+				@Html.DisplayNameFor(model => model.RegistryNumber)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.InvoiceDate)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.InvoiceNumber)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.Vendor)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.Title)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.NetAmount)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.GrossAmount)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.Currency)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.DueDate)
+			</th>
 
-            <th>
-                @Html.DisplayNameFor(model => model.IsPaid)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PaymentDate)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.RegistryNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.InvoiceDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.InvoiceNumber)
-            </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Vendor.VendorName)
-                </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NetAmount)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.GrossAmount)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Currency)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DueDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsPaid)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PaymentDate)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.InvoiceId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.InvoiceId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.InvoiceId">Delete</a> |
-                    <a asp-action="Settlement" asp-route-id="@item.InvoiceId">Settlement</a>
-            </td>
-        </tr>
-}
-    </tbody>
+			<th>
+				@Html.DisplayNameFor(model => model.IsPaid)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.PaymentDate)
+			</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var item in Model)
+		{
+			<tr>
+				<td>
+					@Html.DisplayFor(modelItem => item.RegistryNumber)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.InvoiceDate)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.InvoiceNumber)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.Vendor.VendorName)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.Title)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.NetAmount)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.GrossAmount)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.Currency)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.DueDate)
+				</td>
+				<td>
+					@if (item.IsPaid.HasValue)
+					{
+						@Html.Raw(item.IsPaid.Value ? "Yes" : "No")
+					}
+					else
+					{
+						@Html.Raw("N/A")
+					}
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.PaymentDate)
+				</td>
+				<td>
+					<a asp-action="Edit" asp-route-id="@item.InvoiceId" class="btn btn-primary btn-custom-size mb-1">Edit</a>
+					<a asp-action="Details" asp-route-id="@item.InvoiceId" class="btn btn-primary btn-custom-size mb-1">Details</a>
+					<a asp-action="Delete" asp-route-id="@item.InvoiceId" class="btn btn-primary btn-custom-size mb-1">Delete</a>
+					<a asp-action="Settlement" asp-route-id="@item.InvoiceId" class="btn btn-primary btn-custom-size mb-1">Settlement</a>
+				</td>
+			</tr>
+		}
+	</tbody>
 </table>
