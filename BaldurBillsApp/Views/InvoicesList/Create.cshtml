@@ -31,7 +31,7 @@
                 <span asp-validation-for="InvoiceNumber" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label class="control-label"></label>
+                <label class="control-label">Vendor</label>
                 <input class="form-control" list="vendors-list" id="vendorInput" placeholder="Start typing to search for a vendor" />
                 <datalist id="vendors-list">
                     @foreach (var vendor in ViewBag.vendors)
@@ -63,16 +63,16 @@
                     }
                 }
             </div>
-            <button type="button" onclick="addItem()">Add Item</button>
+            <button type="button" onclick="addItem()" class="btn btn-primary">Add Item</button>
 
             <div class="form-group">
                 <label asp-for="NetAmount" class="control-label"></label>
-                <input asp-for="NetAmount" class="form-control" />
+                <input asp-for="NetAmount" class="form-control" id="NetAmount" type="number" readonly />
                 <span asp-validation-for="NetAmount" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="GrossAmount" class="control-label"></label>
-                <input asp-for="GrossAmount" class="form-control" />
+                <input asp-for="GrossAmount" class="form-control" id="GrossAmount" type="number" readonly />
                 <span asp-validation-for="GrossAmount" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -182,22 +182,52 @@
             container.appendChild(itemDiv);
         }
 
+        function updateTotalsAmount() {
+
+            var netTotalAmount = 0;
+            var grossTotalAmount = 0;
+
+            var container = document.getElementById('invoiceItemsContainer');
+            var items = container.getElementsByClassName('invoice-item');
+            for (var i = 0; i < items.length; i++) {
+                var netAmountInput = items[i].querySelector('input[name$=".NetAmount"]');
+                var grossAmountInput = items[i].querySelector('input[name$=".GrossAmount"]');
+
+                var netAmount = parseFloat(netAmountInput.value) || 0;
+                var grossAmount = parseFloat(grossAmountInput.value) || 0;
+
+                netTotalAmount += netAmount;
+                grossTotalAmount += grossAmount;
+            }
+            document.getElementById('NetAmount').value = netTotalAmount.toFixed(2);
+            document.getElementById('GrossAmount').value = grossTotalAmount.toFixed(2);
+        }
+
+
         function updateGrossAmount(element) {
             var itemDiv = element.closest('.invoice-item'); // Znajdź nadrzędny div dla elementu faktury
             var netAmount = parseFloat(itemDiv.querySelector('input[name^="InvoiceItems["][name$="].NetAmount"]').value) || 0; // Użyj poprawnych selektorów
             var vatRate = parseFloat(itemDiv.querySelector('input[name^="InvoiceItems["][name$="].VatRate"]').value) || 0;
             var grossAmountInput = itemDiv.querySelector('input[name^="InvoiceItems["][name$="].GrossAmount"]');
 
+
             var calculatedValue = (netAmount + netAmount * vatRate / 100).toFixed(2);
             grossAmountInput.value = calculatedValue; // Ustawianie wartości
+
+            updateTotalsAmount();
+
             console.log("Updated Gross Amount to: ", calculatedValue); // Logowanie dla sprawdzenia
+
         }
+
+
 
         function removeItem(index) {
             var item = document.getElementById(`item-${index}`);
             if (item) {
                 item.remove();
             }
+            updateTotalsAmount();
         }
 
         document.addEventListener('DOMContentLoaded', function () {

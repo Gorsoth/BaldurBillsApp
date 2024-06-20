@@ -277,6 +277,15 @@ namespace BaldurBillsApp.Controllers
             model = invoicesList;
             return View(model);
         }
+        public int ExtractFirstNumber(string registryNumber)
+        {
+            var parts = registryNumber.Split('/');
+            if (parts.Length > 0 && int.TryParse(parts[0], out int number))
+            {
+                return number;
+            }
+            return 0; // lub inna wartość domyślna w przypadku błędu parsowania
+        }
 
         // POST: InvoicesList/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -310,9 +319,18 @@ namespace BaldurBillsApp.Controllers
                 //funkcja kolejny numer w bazi / datetime miesiac / rok
                 int currentMonth = DateOnly.FromDateTime(DateTime.Now).Month;
                 int currentYear = DateOnly.FromDateTime(DateTime.Now).Year;
-                var nextNumber = _context.InvoicesLists.Count(x => x.EntryDate.HasValue && x.EntryDate.Value.Month == currentMonth && x.EntryDate.Value.Year == currentYear) + 1;
+                //var nextNumber = _context.InvoicesLists.Count(x => x.EntryDate.HasValue && x.EntryDate.Value.Month == currentMonth && x.EntryDate.Value.Year == currentYear) + 1;
 
-                var registryNumber = $@"{nextNumber}/{currentMonth}/{currentYear}";
+                var highestRegistryNumber = _context.InvoicesLists
+                                                    .Where(x => x.EntryDate.HasValue && x.EntryDate.Value.Month == currentMonth && x.EntryDate.Value.Year == currentYear)
+                                                    .ToList()
+                                                    .Select(x => ExtractFirstNumber(x.RegistryNumber))
+                                                    .OrderByDescending(number => number)
+                                                    .FirstOrDefault();
+
+
+
+                var registryNumber = $@"{highestRegistryNumber+1}/{currentMonth}/{currentYear}";
                 invoicesList.RegistryNumber = registryNumber;
 
                 _context.Add(invoicesList);
