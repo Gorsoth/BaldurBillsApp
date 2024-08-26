@@ -13,9 +13,11 @@ using BaldurBillsApp.ViewModels;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using AutoMapper;
 using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BaldurBillsApp.Controllers
 {
+    [Authorize]
     public class InvoicesListController : Controller
     {
         private readonly BaldurBillsDbContext _context;

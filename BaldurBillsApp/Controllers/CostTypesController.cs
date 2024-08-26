@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BaldurBillsApp.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BaldurBillsApp.Controllers
 {
+    [Authorize]
     public class CostTypesController : Controller
     {
         private readonly BaldurBillsDbContext _context;

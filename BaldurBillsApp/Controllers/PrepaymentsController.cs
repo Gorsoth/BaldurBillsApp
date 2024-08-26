@@ -8,9 +8,11 @@ using Microsoft.EntityFrameworkCore;
 using BaldurBillsApp.Models;
 using BaldurBillsApp.SelectModels;
 using BaldurBillsApp.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BaldurBillsApp.Controllers
 {
+    [Authorize]
     public class PrepaymentsController : Controller
     {
         private readonly BaldurBillsDbContext _context;
